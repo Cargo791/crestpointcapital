@@ -7,6 +7,7 @@ import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import pg from "pg";
 import multer from "multer";
+const bcrypt = await import("bcryptjs");
 import nodemailer from "nodemailer";
 import axios from "axios"
 
@@ -14,7 +15,7 @@ dotenv.config();
 
 // ✅ USE THIS INSTEAD
 let priceCache = null;
-
+const hashedPassword = await bcrypt.default.hash(password, 10);
 // Fetch function
 async function fetchPrices() {
   try {
@@ -171,9 +172,9 @@ app.get('/secrets', async (req, res) => {
 
     console.log("📝 Inserting new user...");
     const result = await db.query(
-      "INSERT INTO users (email, password, full_name) VALUES ($1, $2, $3) RETURNING *",
-      [email, password, name]
-    );
+  "INSERT INTO users (email, password_hash, full_name) VALUES ($1, $2, $3) RETURNING *",
+  [email, hashedPassword, name]
+);
 
     const user = result.rows[0];
     const deposit = 0;
@@ -239,7 +240,11 @@ app.post("/login", async (req, res) => {
     if (result.rows.length > 0) {
       const user = result.rows[0];
 
-      if (password === user.password) {
+      if (!isMatch) {
+
+  return res.send("Incorrect Password");
+
+} {
         req.session.user_email = user.email;
 
         const prices = getCryptoPricesCached();
@@ -612,10 +617,10 @@ app.post("/change-password", async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(newPassword, 10); // ✅ requires import
 
-    await db.query( // ✅ use "db", not "pool"
-      "UPDATE users SET password = $1 WHERE email = $2",
-      [hashedPassword, userEmail]
-    );
+    await db.query(
+  "UPDATE users SET password_hash = $1 WHERE email = $2",
+  [hashedPassword, userEmail]
+);
 
     return res.render("secrets", {
       successMessage: "Password updated successfully.",
