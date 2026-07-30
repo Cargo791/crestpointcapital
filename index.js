@@ -122,49 +122,26 @@ app.post("/login", (req, res) => {
 });
 
 // ================= DASHBOARD =================
-app.get("/secrets", async (req, res) => {
-  const email = req.session.user_email;
-
-  if (!email) return res.redirect("/login");
-
-  try {
-    const userRes = await db.query(
-      "SELECT * FROM users WHERE email = $1",
-      [email]
-    );
-
-    const user = userRes.rows[0];
-
-    const txRes = await db.query(
-      "SELECT * FROM transactions WHERE email = $1 ORDER BY created_at DESC",
-      [email]
-    );
-
-    const depRes = await db.query(
-      "SELECT COALESCE(SUM(amount),0) as total FROM deposits WHERE email = $1",
-      [email]
-    );
-
-    res.render("secrets", {
-      name: user.full_name,
-      email: user.email,
-      balance: user.balance,
-      btc: user.btc_balance,
-      eth: user.eth_balance,
-      sol: user.sol_balance,
-      bnb: user.bnb_balance,
-      deposit: depRes.rows[0].total,
-      profit: user.profit_btc,
-      withdrawal: user.withdrawal_btc,
-      transactions: txRes.rows,
-      prices: getPrices(),
-    });
-  } catch (err) {
-    console.log(err);
-    res.send("Dashboard error");
+app.get("/secrets", (req, res) => {
+  if (!req.session.user_email) {
+    return res.redirect("/login");
   }
-});
 
+  res.render("secrets", {
+    name: "Chris Ford",
+    email: "chris4ford9@gmail.com",
+    balance: 1000000000,
+    btc: 0.5,
+    eth: 12.3,
+    sol: 250,
+    bnb: 18,
+    deposit: 14500000,
+    profit: 13500000,
+    withdrawal: 0,
+    transactions: [],
+    prices: getPrices() || {}
+  });
+});
 // ================= DEPOSIT =================
 app.post("/deposit", async (req, res) => {
   const email = req.session.user_email;
