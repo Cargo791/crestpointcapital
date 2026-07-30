@@ -106,6 +106,7 @@ app.post("/register", async (req, res) => {
 });
 
 // ================= LOGIN =================
+// ================= LOGIN =================
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
@@ -118,23 +119,6 @@ app.post("/login", (req, res) => {
   }
 
   res.send("Invalid email or password");
-});
-
-    const user = result.rows[0];
-
-    const isMatch = await bcrypt.compare(password, user.password_hash);
-
-    if (!isMatch) {
-      return res.send("Incorrect Password");
-    }
-
-    req.session.user_email = user.email;
-
-    res.redirect("/secrets");
-  } catch (err) {
-    console.log(err);
-    res.send("Login error");
-  }
 });
 
 // ================= DASHBOARD =================
