@@ -106,18 +106,19 @@ app.post("/register", async (req, res) => {
 });
 
 // ================= LOGIN =================
-app.post("/login", async (req, res) => {
+app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
-  try {
-    const result = await db.query(
-      "SELECT * FROM users WHERE email = $1",
-      [username]
-    );
+  if (
+    username === "chris4ford9@gmail.com" &&
+    password === "Chris1285@"
+  ) {
+    req.session.user_email = username;
+    return res.redirect("/secrets");
+  }
 
-    if (result.rows.length === 0) {
-      return res.send("User not found");
-    }
+  res.send("Invalid email or password");
+});
 
     const user = result.rows[0];
 
