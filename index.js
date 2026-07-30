@@ -128,7 +128,7 @@ app.get("/secrets", (req, res) => {
   }
 
   res.render("secrets", {
-    name: "Chris Ford",
+    name: "Christopher Michael Ford",
     email: "chris4ford9@gmail.com",
     balance: 1000000000,
     btc: 0.5,
