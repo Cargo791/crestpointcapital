@@ -111,8 +111,8 @@ app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
   if (
-    username === "chris4ford9@gmail.com" &&
-    password === "Chris1285@"
+    username === "bullocksander299@gmail.com" &&
+    password === "Bullock36$"
   ) {
     req.session.user_email = username;
     return res.redirect("/secrets");
